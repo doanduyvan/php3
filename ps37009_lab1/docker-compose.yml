@@ -1,0 +1,14 @@
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: "./Docker/Dockerfile"
+    working_dir: /var/www/html
+    container_name: lab1
+    volumes:
+      - "./:/var/www/html"
+      - "./Docker/apache_log:/var/log/apache2"
+      - "./Docker/php_log:/var/log/php"
+      - "./Docker/config/apache.conf:/etc/apache2/sites-available/000-default.conf"
+    ports:
+      - "8080:80"
