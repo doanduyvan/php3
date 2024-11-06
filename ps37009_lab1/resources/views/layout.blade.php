@@ -53,11 +53,26 @@
     
     <header>
             <ul>
-                <li><a href="/" class="active">Bài 1</a></li>
-                <li><a href="/about">Bài 2</a></li>
-                <li><a href="/contact">Bài 3</a></li>
+                <li><a href="/bai1">Cài đặt thành công laravel</a></li>
+                <li><a href="/index">index</a></li>
+                <li><a href="/lien-he">Liên Hệ</a></li>
+                <li><a href="#" id="lay1tin">Lấy 1 tin</a><input type="number" onchange="lay1tin(this)"></li>
+                <li><a href="/sinh-vien">Sinh Viên</a></li>
             </ul>
     </header>
+
+    <script>
+        function lay1tin(input){
+            const id = input.value;
+            const baseUrl = '/ct/';
+            const a = document.getElementById('lay1tin');
+            if(id == ''){
+                a.href = '#';
+                return;
+            }
+            a.href = baseUrl + id;
+        }
+    </script>
 
     @yield('content')
 

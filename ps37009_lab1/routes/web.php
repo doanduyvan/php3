@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SinhvienController;
 use App\Http\Controllers\TinController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,16 +15,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [TinController::class, 'index']);
+Route::get('/', function () {
+    return view('layout');
+});
+
+Route::get('/bai1', function () {
+    return view('welcome');
+});
+
+Route::get('/index',[TinController::class, 'index']);
 
 Route::get('/lien-he',[TinController::class, 'lienhe']);
 
 Route::get('/ct/{id}',[TinController::class, 'lay1tin']);
 
-Route::get('/test', function () {
-    return 'Đây là trang test';
-});
+Route::get('/sinh-vien', [SinhvienController::class, 'showall']);
 
-Route::get('/layout', function () {
-    return view('layout');
-});
+Route::get('/sinh-vien/{id}',[SinhvienController::class, 'chitiet']);
