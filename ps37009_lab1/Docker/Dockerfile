@@ -6,4 +6,17 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
 # a2enmod rewrite
 RUN a2enmod rewrite
 
+# Install git
+RUN apt-get update && apt-get install -y git
+
+# Install unzip
+
+RUN apt-get update && apt-get install -y unzip
+
+# Install zip
+
+RUN apt-get update && apt-get install -y zip
+
+COPY . /var/www/html
+
 CMD ["composer", "install"]
