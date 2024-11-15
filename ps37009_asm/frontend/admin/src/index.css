@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --w-sidebar: 250px;
+}
+
+.sidebar_hidden{
+  width: var(--w-sidebar);
+}
+
+.sidebar{
+  width: var(--w-sidebar);
+  position: fixed;
+  min-height: 100dvh;
+}
+
+.itemchevronright{
+  svg{
+    transition: all 0.3s;
+    transform: translateY(-3px);
+  }
+}
+
+.itemchevronright:hover{
+  svg{
+    transform: translateY(-3px) rotate(90deg);
+  }
+}
+
+.itemsubmenu{
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.itemsubmenu.active{
+  max-height: 1000px;
+}
