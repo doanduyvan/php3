@@ -8,12 +8,24 @@
 
 .sidebar_hidden{
   width: var(--w-sidebar);
+  min-width: var(--w-sidebar);
 }
 
 .sidebar{
   width: var(--w-sidebar);
   position: fixed;
   min-height: 100dvh;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar{
+  width: 5px;
+  background-color: gray;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+  @apply bg-gray-800;
 }
 
 .itemchevronright{

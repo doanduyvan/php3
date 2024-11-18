@@ -3,6 +3,12 @@ import React from 'react';
 import { ChevronRight } from './SvgComponent';
 import { Route, Routes, Link } from 'react-router-dom';
 import { useState } from 'react';
+import Dashboard from './dashboard/dashboard';
+import AddCategoryPage from './category/addcategory';
+import CategoryListPage from './category/listcategory';
+import PostListPage from './post/postlist';
+import AddPost from './post/addpost';
+import TodoList from './todos/todo';
 
 const user = {
     name: 'Tom Cook',
@@ -24,7 +30,7 @@ const menu = [
         link: "/category",
         submenu: [
             {name: "Thêm danh mục", link: "/category/add"},
-            {name: "Danh sách danh mục", link: "/category/list"}
+            {name: "Danh sách danh mục", link: "/category"}
         ]
     },
     {
@@ -32,7 +38,7 @@ const menu = [
         link: "/post",
         submenu: [
             {name: "Thêm bài viết", link: "/post/add"},
-            {name: "Danh sách bài viết", link: "/post/list"}
+            {name: "Danh sách bài viết", link: "/post"}
         ]
     },
     {
@@ -53,6 +59,21 @@ const menu = [
     {
         name: "Đăng xuất",
         link: "/logout",
+        submenu: null
+    },
+    {
+        name: "Todos",
+        link: "/todo",
+        submenu: null
+    },
+    {
+        name: "Todos",
+        link: "/todo",
+        submenu: null
+    },
+    {
+        name: "Todos",
+        link: "/todo",
         submenu: null
     }
 ]
@@ -80,7 +101,20 @@ function Layout() {
                 </div>
                 {/* end sidebar */}
                 </div>
-                <div className="flex-1">hello</div>
+                <div className="flex-1">
+                    {/* noi dung */}
+                    <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/category" element={<CategoryListPage />} />
+                        <Route path="/category/add" element={<AddCategoryPage />} />
+                        <Route path="/post" element={<PostListPage />} />
+                        <Route path="/post/add" element={<AddPost />} />
+
+                        <Route path="/todo" element={<TodoList />} />
+
+
+                    </Routes>
+                </div>
             </div>
         </>
     );
@@ -92,8 +126,8 @@ function ItemMenu({menu,hr}){
     return (
         <>
             {hr && <hr className='border-gray-500' />}
-            <div className="flex items-center px-4 py-2 hover:bg-gray-900 cursor-pointer">
-                <Link to={'/'} className="text-lg flex-1">{menu.name}</Link> { submenu &&  <span className='block w-[40px] text-right itemchevronright' onClick={()=>{setOpen(!open)}}> <ChevronRight className='inline-block w-5 cursor-pointer' /> </span>}
+            <div className={`flex items-center px-4 py-2 hover:bg-gray-900 cursor-pointer ${open ? "active" : ''}`}>
+                <Link to={menu.link} className="text-lg flex-1">{menu.name}</Link> { submenu &&  <span className='block w-[40px] text-right itemchevronright' onClick={()=>{setOpen(!open)}}> <ChevronRight className='inline-block w-5 cursor-pointer' /> </span>}
             </div>
 
             {submenu && 
@@ -110,7 +144,7 @@ function ItemSubMenu({submenu,hr}){
         <div className='pl-4'>
             {hr && <hr className='border-gray-500' />}
             <div className="flex items-center py-2 pl-3 hover:bg-gray-900 cursor-pointer">
-                <Link to={'/'} className="text-lg flex-1">{submenu.name}</Link>
+                <Link to={submenu.link} className="text-lg flex-1">{submenu.name}</Link>
             </div>
         </div>
     )
