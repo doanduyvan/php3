@@ -1,76 +1,110 @@
-import React from 'react';
-
+import React, { useState } from 'react';
+import ContentEditor from './post_components/contentediter';
+import Title from './post_components/title';
+import ShortDes from './post_components/shortdes';
+import CategoryPost from './post_components/category';
+import AvatarPost from './post_components/avatar';
+import { notification } from "antd";
+import api from '../api';
 const AddPost = () => {
+
+  const [title, setTitle] = useState('');
+  const [shortDes, setShortDes] = useState('');
+  const [content, setContent] = useState('');
+  const [category, setCategory] = useState(null);
+  const [avatar, setAvatar] = useState(null);
+  const submitHandler = (e) => {
+    e.preventDefault();
+    const fields = {
+       title,
+       shortDes, 
+       content,
+       category,
+       avatar
+    };
+    const missingFields = Object.keys(fields).filter((key) => {
+      const value = fields[key];
+      if (typeof value === "string") {
+        return !value.trim();
+      }
+      if (key === "avatar") {
+        return !value; 
+      }
+      return !value;
+    });
+
+    if(missingFields.length > 0) {
+        notification.open({
+          message: "Thông báo",
+          description: `Vui lòng điền đầy đủ thông tin ${missingFields[0]}`,
+          type: "error",
+      });
+      return;
+    }
+
+    const customHeader = { headers: {'Content-Type': 'multipart/form-data'}};
+    const formData = new FormData();
+    Object.keys(fields).forEach((key) => {
+      formData.append(key, fields[key]);
+    });
+
+    api.post('/admin/news', formData, customHeader)
+    .then(res => {
+      console.log("dv ok: ",res);
+      notification.open({
+        message: "Thông báo",
+        description: "Thêm bài viết thành công",
+        type: "success",
+      });
+      setTitle('');
+      setShortDes('');
+      setContent('');
+      setCategory(null);
+      setAvatar(null);
+    })
+    .catch(err => {
+      console.log("dv error: ",err);
+
+      const statusCodes = err.response?.status;
+      let des = "Thêm bài viết thất bại";
+      switch (statusCodes) {
+        case 400:
+          des = "Dữ liệu không hợp lệ";
+          break;
+        case 403:
+          des = "Không có quyền thực hiện thao tác này";
+          break;
+        case 422:
+          const errors = err.response.data.errors;
+          // lấy error đầu tiên
+          des = errors[Object.keys(errors)[0]][0];
+          break;
+      }
+      notification.open({
+        message: "Thông báo",
+        description: des,
+        type: "error",
+      });
+    });
+
+    // notification.open({
+    //   message: "Thông báo",
+    //   description: "Thêm bài viết thành công",
+    //   type: "success",      
+    // });
+  };
+
   return (
     <div className="p-6">
-      {/* Phần tiêu đề */}
       <h2 className="text-2xl font-semibold mb-6">Đăng Bài Mới</h2>
-
-      {/* Form đăng bài */}
       <div className="bg-white p-6 shadow-md rounded-lg">
-        <form action="#" method="POST">
-          {/* Tiêu đề bài viết */}
-          <div className="mb-4">
-            <label htmlFor="title" className="block text-lg font-medium text-gray-700">Tiêu đề bài viết</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              placeholder="Nhập tiêu đề bài viết"
-              className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              required
-            />
-          </div>
-
-          {/* Nội dung bài viết */}
-          <div className="mb-4">
-            <label htmlFor="content" className="block text-lg font-medium text-gray-700">Nội dung bài viết</label>
-            <textarea
-              id="content"
-              name="content"
-              rows="10"
-              placeholder="Nhập nội dung bài viết..."
-              className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              required
-            ></textarea>
-          </div>
-
-          {/* Danh mục */}
-          <div className="mb-4">
-            <label htmlFor="category" className="block text-lg font-medium text-gray-700">Danh mục</label>
-            <select
-              id="category"
-              name="category"
-              className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Chọn danh mục</option>
-              <option value="tin_tuc">Tin tức</option>
-              <option value="giai_tri">Giải trí</option>
-              <option value="the_thao">Thể thao</option>
-              {/* Thêm các danh mục khác tùy thuộc vào dự án */}
-            </select>
-          </div>
-
-          {/* Ảnh đại diện */}
-          <div className="mb-4">
-            <label htmlFor="thumbnail" className="block text-lg font-medium text-gray-700">Ảnh đại diện</label>
-            <input
-              type="file"
-              id="thumbnail"
-              name="thumbnail"
-              className="mt-1 block w-full border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-              accept="image/*"
-            />
-          </div>
-
-          {/* Các tùy chọn đăng bài */}
-          <div className="mb-4 flex items-center">
-            <input type="checkbox" id="publish" name="publish" className="mr-2" />
-            <label htmlFor="publish" className="text-lg text-gray-700">Đăng bài ngay lập tức</label>
-          </div>
-
-          {/* Nút hành động */}
-          <div className="flex justify-end">
+        <form action="#" onSubmit={submitHandler}>
+          < Title value={title} setTitle={setTitle} />
+          < ShortDes  value={shortDes} setShortDes={setShortDes} />
+          <ContentEditor content={content} setContent={setContent}/>
+          < CategoryPost value={category} setCategory={setCategory} />
+          < AvatarPost value={avatar} setAvatar={setAvatar} />
+          <div className="flex justify-end mt-4">
             <button type="reset" className="mr-4 px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500">
               Hủy
             </button>

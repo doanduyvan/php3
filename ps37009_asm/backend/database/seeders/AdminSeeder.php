@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
@@ -17,27 +18,31 @@ class AdminSeeder extends Seeder
         DB::table('admin')->insert([
             [
                 'fullname' => 'admin',
-                'pass' => 123,
+                'pass' => Hash::make('123'),
                 'role' => 3,
-                'email' => 'admin@gmail.com'
+                'email' => 'admin@gmail.com',
+                'avatar' => 'https://placehold.co/600x400'
             ],
             [
                 'fullname' => 'kiemduyet 1',
-                'pass' => 123,
+                'pass' => Hash::make('123'),
                 'role' => 2,
-                'email' => 'k1@gmail.com'
+                'email' => 'k1@gmail.com',
+                'avatar' => 'https://placehold.co/600x400'
             ],
             [
                 'fullname' => 'phong vien 1',
-                'pass' => 123,
+                'pass' => Hash::make('123'),
                 'role' => 1,
-                'email' => 'p1@gmail.com'
+                'email' => 'p1@gmail.com',
+                'avatar' => 'https://placehold.co/600x400'
             ],
             [
                 'fullname' => 'phong vien 2',
-                'pass' => 123,
+                'pass' => Hash::make('123'),
                 'role' => 1,
-                'email' => 'p2@gmail.com'
+                'email' => 'p2@gmail.com',
+                'avatar' => 'https://placehold.co/600x400'
             ]
         ]);
 

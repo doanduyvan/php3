@@ -18,6 +18,7 @@ class CreateCustomerTable extends Migration
             $table->string('fullname', 255); 
             $table->string('email', 255)->unique(); 
             $table->text('pass'); 
+            $table->text('avatar')->nullable();
             $table->timestamps();
         });
     }

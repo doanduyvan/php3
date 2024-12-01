@@ -3,26 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\News;
 
 class Category extends Model
 {
+
+    protected $table = 'category';
 
     /**
      * @var array<int, string>
      */
 
     protected $fillable = [
-        'name',
-        'description',
+        'title',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
+    protected $guarded = [];
+
+    public $timestamps = false;
+
+    public function news()
+    {
+        return $this->hasMany(News::class, 'idcategory', 'id');
+    }
 }

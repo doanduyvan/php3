@@ -50,3 +50,28 @@
 .itemsubmenu.active{
   max-height: 1000px;
 }
+
+.fadeInTopToBottom {
+  animation: fadeInTopToBottom 0.3s ease;
+}
+
+@keyframes fadeInTopToBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.addpost .ck-editor__editable {
+  min-height: 300px; /* Chiều cao tối thiểu */
+  max-height: 500px; /* (Tùy chọn) Chiều cao tối đa */
+  overflow: auto;    /* Hiển thị thanh cuộn nếu cần */
+}
+
+.afdfdfasfasdf{
+  background-color: rgba(218, 218, 218, 0.5);
+}

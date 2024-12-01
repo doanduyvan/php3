@@ -1,22 +1,84 @@
 import React, { useState, useEffect } from 'react';
+import api from '../api';
+import { Link } from 'react-router-dom';
+import { Pagination } from 'antd';
+import LoaDing from '../components/loading';
+import { Button, Modal, notification } from "antd";
+const statusNames = {
+  0 : 'Chờ duyệt',
+  1 : 'Đã duyệt',
+  2 : 'Từ chối'
+}
 
 const PostListPage = () => {
+
+  const [loader, setLoader] = useState(false);
   const [posts, setPosts] = useState([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  let postUri = '/admin/news/' + '?page=' + currentPage + '&limit=' + pageSize;
   useEffect(() => {
-    // Fetch posts from API or use static data for now
-    const fetchPosts = async () => {
-      // Simulate API call
-      const data = [
-        { id: 1, title: 'Bài viết về Tin Tức', category: 'Tin Tức', author: 'Nguyễn Văn A', status: 'Đã duyệt' },
-        { id: 2, title: 'Bài viết về Giải Trí', category: 'Giải Trí', author: 'Trần Thị B', status: 'Chờ duyệt' },
-        { id: 3, title: 'Bài viết về Thể Thao', category: 'Thể Thao', author: 'Lê Văn C', status: 'Đã duyệt' },
-      ];
-      setPosts(data);
-    };
+    setLoader(true);
+    api.get(postUri)
+      .then(response => {
+        const dataResponse = response.data;
+        console.log(dataResponse);
+        setCurrentPage(dataResponse.current_page);
+        setTotalItems(dataResponse.total);
+        setPageSize(dataResponse.per_page);
+        const newdata = dataResponse.data.map((post) => {
+          return {
+            id: post.id,
+            title: post.title,
+            category: post.category.title,
+            author: post.admin.fullname,
+            status: statusNames[post.onoff]
+          };
+        });
+        setPosts(newdata);
+      })
+      .catch(() => {
+        console.log('Loading posts failed');
+      })
+      .finally(() => {
+        setLoader(false);
+      });
+  }, [currentPage, pageSize]);
 
-    fetchPosts();
-  }, []);
+  const handlePageChange = (page,pageSize) => {
+    setCurrentPage(page);
+    setPageSize(pageSize);
+  };
+
+  const handleDelete = (id) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa bài viết',
+      content: 'Bạn có chắc chắn muốn xóa bài viết này?',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      onOk: () => {
+        api.delete(`/admin/news/${id}`)
+          .then(() => {
+            notification.open({
+              message: "Thông báo",
+              description: "Xóa bài viết thành công",
+              type: "success",
+            })
+            setPosts(posts.filter(post => post.id !== id));
+          })
+          .catch((err) => {
+            const statusCodes = err.response?.status;
+            const message = err.response?.data?.message || "Lỗi Hệ Thống";
+            notification.open({
+              message: "Thông báo",
+              description: message,
+              type: "error",
+            })
+          });
+      }
+    });
+  };
 
   return (
     <div className="p-6">
@@ -25,7 +87,7 @@ const PostListPage = () => {
 
       {/* Post List Table */}
       <div className="bg-white p-6 shadow-md rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="w-full max-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -48,7 +110,7 @@ const PostListPage = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {posts.map((post) => (
               <tr key={post.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td className="px-6 py-4 text-sm font-medium text-gray-900">
                   {post.title}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -61,14 +123,23 @@ const PostListPage = () => {
                   {post.status}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-indigo-600 hover:text-indigo-900 mr-4">Sửa</button>
-                  <button className="text-red-600 hover:text-red-900">Xóa</button>
+                  <Link to={`/post/edit/${post.id}`} className="text-indigo-600 hover:text-indigo-900 mr-4">Sửa</Link>
+                  <button className="text-red-600 hover:text-red-900" onClick={()=> {handleDelete(post.id)}}>Xóa</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {totalItems > pageSize && 
+        <div className='mt-5 text-center'>
+          <Pagination defaultCurrent={currentPage} total={totalItems} pageSize={pageSize} onChange={handlePageChange} align='center' />
+        </div>
+      }
+
+      <LoaDing loader={loader} />
+
     </div>
   );
 };

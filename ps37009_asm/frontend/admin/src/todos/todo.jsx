@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import api from '../api';
 function TodoList() {
   const [todos, setTodos] = useState([
     'Hoc JS',
@@ -7,13 +7,32 @@ function TodoList() {
     'Hoc HTML',
     'Hoc React'
   ]);
+
+  
   const [newTodo, setNewTodo] = useState('');
 
+  const [method, setMethod] = useState('get');
+
   const handleAddTodo = () => {
-    if (newTodo.trim() !== '') {
-      setTodos([...todos, newTodo]);
-      setNewTodo('');
-    }
+    // if (newTodo.trim() !== '') {
+    //   setTodos([...todos, newTodo]);
+    //   setNewTodo('');
+    // }
+    // test api 
+
+    const he = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+
+    api[method](newTodo, {} , he)
+    .then(res => {
+      console.log("dv ok: ",res);
+    })
+    .catch(err => {
+      console.log("dv error: ",err);
+    })
   };
 
   const handleDeleteTodo = (index) => {
@@ -32,6 +51,14 @@ function TodoList() {
 
   return (
     <div className="flex flex-col items-center p-4">
+
+      <div className='flex gap-3'>
+        <button className={`border p-2 ${method == 'get' && 'bg-green-500'}`} onClick={()=> {setMethod('get')}}>GET</button>
+        <button className={`border p-2 ${method == 'post' && 'bg-green-500'}`} onClick={()=> {setMethod('post')}}>POST</button>
+        <button className={`border p-2 ${method == 'put' && 'bg-green-500'}`} onClick={()=> {setMethod('put')}}>PUT</button>
+        <button className={`border p-2 ${method == 'delete' && 'bg-green-500'}`} onClick={()=> {setMethod('delete')}}>DELETE</button>
+      </div>
+
       <div className="w-full max-w-lg p-4 bg-white rounded-md shadow-md">
         <h2 className="text-xl font-bold mb-4">Todo Management</h2>
         <div className="flex mb-4">

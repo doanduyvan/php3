@@ -17,7 +17,8 @@ class CreateAdminTable extends Migration
             $table->increments('id');
             $table->string('fullname', 255);
             $table->string('email',255)->unique();
-            $table->text('pass',255);
+            $table->text('pass');
+            $table->text('avatar')->nullable();
             $table->tinyInteger('role',false,true);
             $table->tinyInteger('onoff',false,true)->default(1);
             $table->timestamps();
