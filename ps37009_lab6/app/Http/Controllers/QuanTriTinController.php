@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use function Ramsey\Uuid\v1;
+
 class QuanTriTinController extends Controller
 {
     public function __construct()
@@ -13,6 +15,6 @@ class QuanTriTinController extends Controller
 
     function index()
     {
-        return "<h1>Danh Sách Tin</h1>";
+        return view('quantritin');
     }
 }

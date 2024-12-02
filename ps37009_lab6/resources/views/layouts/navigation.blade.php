@@ -15,6 +15,22 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('quantri')" :active="request()->routeIs('quantri')">
+                        {{ __('Quản Trị') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('quantritin')" :active="request()->routeIs('quantritin')">
+                        {{ __('Quản Trị Tin') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('download')" :active="request()->routeIs('download')">
+                        {{ __('DownLoad') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('protected')" :active="request()->routeIs('protected')">
+                        {{ __('Protected') }}
+                    </x-nav-link>
                 </div>
             </div>
 

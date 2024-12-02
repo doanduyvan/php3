@@ -24,17 +24,17 @@ Route::get('/dashboard', function () {
 
 Route::get('download', function () {
     return view('download');
-})->middleware('auth');
+})->middleware('auth')->name('download');
 
-Route::get('quantritin', [QuanTriTinController::class, 'index']);
+Route::get('quantritin', [QuanTriTinController::class, 'index'])->name('quantritin');
 
 Route::get('quantri', function () {
     return view('quantri');
-})->middleware('quantri');
+})->middleware('quantri')->name('quantri');
 
 Route::get('protected', function () {
     return 'Bạn đã truy cập thành công!';
-})->middleware('auth.basic');
+})->middleware('auth.basic')->name('protected');
 
 require __DIR__.'/auth.php';
 
