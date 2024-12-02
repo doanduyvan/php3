@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
 
 class EmailController extends Controller
 {
@@ -13,7 +15,7 @@ class EmailController extends Controller
      */
     public function index()
     {
-        //
+        return view('emails.fromemail');
     }
 
     /**
@@ -34,7 +36,18 @@ class EmailController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'tieude' => 'required',
+            'noidung' => 'required',
+        ]);
+
+        $subject = $validated['tieude'];
+        $content = $validated['noidung'];
+
+        Mail::to($validated['email'])->send(new TestMail($subject, $content));
+
+        return redirect()->route('formemail')->with('info', 'Email đã được gửi thành công!');
     }
 
     /**
