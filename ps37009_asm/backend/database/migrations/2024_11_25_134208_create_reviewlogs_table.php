@@ -17,7 +17,8 @@ class CreateReviewlogsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('idadmin');
             $table->unsignedInteger('idnews');
-            $table->text('note');
+            $table->text('note')->nullable();
+            $table->tinyInteger('onoff',false,true);
             $table->timestamps();
         });
     }

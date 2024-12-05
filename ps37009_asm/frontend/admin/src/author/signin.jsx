@@ -1,30 +1,60 @@
 
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import SignInGoogle from './signingoogle'
 import api from '/src/api';
+import {jwtDecode} from 'jwt-decode';
+import LoaDing from '../components/loading';
+import { UserContext } from '../context/usercontext';
+import { notification } from 'antd';
 
-export default function SignIn({setIsLogin}) {
 
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+export default function SignIn() {
+
+  const { updateUser } = useContext(UserContext);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
 
   function handleSubmit(e) {
     e.preventDefault();
+    setIsLoading(true);
     api.post('/admin/login', { email, password })
       .then(res => {
-        console.log(res);
-        if (res.data.access_token) {
-          localStorage.setItem('token', res.data.access_token);
-          setIsLogin(true);
-        }
-        else {
-          alert('Sai email hoặc mật khẩu');
+        const token = res.data.access_token;
+        if (token) {
+          localStorage.setItem('token', token);
+          const decodedToken = jwtDecode(token);
+          const userInfo = {
+            username: decodedToken.username,
+            role: decodedToken.role,
+            avatar: decodedToken.avatar,
+          };
+          updateUser(userInfo);
+          notification.success({ message: 'Đăng nhập thành công' });
+        }else{
+          alert('Token not found');
         }
       })
       .catch(err => {
-        console.log(err);
+        const status = err.response.status;
+        const error = err.response.data.error;
+        if(status && status === 401) {
+          notification.error({
+            message: 'Đăng nhập không thành công',
+            description: error,
+          });
+          return;
+        }
+        notification.error({
+          message: 'Đã có lỗi xảy ra',
+          description: 'Vui lòng thử lại sau',
+        });
       })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   function isValidEmail(email) {
@@ -58,7 +88,6 @@ export default function SignIn({setIsLogin}) {
                     onChange={(e) => setEmail(e.target.value)}
                  />
                 </div>
-                <p className='text-red-500 text-sm'>loi</p>
               </div>
   
               <div>
@@ -100,6 +129,7 @@ export default function SignIn({setIsLogin}) {
            </div>
           </div>
         </div>
+        <LoaDing loader={isLoading} />
       </>
     )
   }

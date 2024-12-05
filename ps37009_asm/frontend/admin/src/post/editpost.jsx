@@ -8,114 +8,130 @@ import { notification } from "antd";
 import api from '../api';
 import { useParams, useNavigate } from 'react-router-dom';
 import LoaDing from '../components/loading';
+import Tags from './post_components/tags';
+
 const EditPost = () => {
 
-    const [loader, setLoader] = useState(false);
-    const { id } = useParams();
-    const navigate = useNavigate();
-    useEffect(() => {
-        if (!id || isNaN(id)) {
-            navigate('/post');
-        }
-    }, [id, navigate]);
+  const [loader, setLoader] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!id || isNaN(id)) {
+      navigate('/post');
+    }
+  }, [id, navigate]);
 
   const [title, setTitle] = useState('');
   const [shortDes, setShortDes] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(null);
   const [avatar, setAvatar] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [isAccept, setIsAccept] = useState(false);
+  const [status, setStatus] = useState(null);
 
-    useEffect(() => {
-        setLoader(true);
-        api.get(`/admin/news/${id}`)
-        .then(res => {
-            const data = res.data;
-            setTitle(data.title);
-            setShortDes(data.shortdes);
-            setContent(data.des);
-            setCategory(data.idcategory);
-            setAvatar(data.img);
-        })
-        .catch(err => {
-            console.log("dv error: ",err);
-        })
-        .finally(() => {
-            setLoader(false);
-        });
-    }, []);
+
+  useEffect(() => {
+    setLoader(true);
+    api.get(`/admin/news/${id}`)
+      .then(res => {
+        const data = res.data;
+        setTitle(data.title);
+        setShortDes(data.shortdes);
+        setContent(data.des);
+        setCategory(data.idcategory);
+        setAvatar(data.img);
+        setTags(data.tags);
+        setStatus(data.onoff);
+      })
+      .catch(err => {
+        console.log("dv error: ", err);
+      })
+      .finally(() => {
+        setLoader(false);
+      });
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
+    const tagsid = tags.map(tag => tag.id);
     const fields = {
-       title,
-       shortDes, 
-       content,
-       category,
-       avatar
+      title,
+      shortDes,
+      content,
+      category,
+      avatar,
+      isAccept: isAccept ? 1 : 0,
+      tagsid: JSON.stringify(tagsid)
     };
+
+
     const missingFields = Object.keys(fields).filter((key) => {
       const value = fields[key];
+      if (key === 'isAccept') {
+        return false;
+      }
       if (typeof value === "string") {
         return !value.trim();
       }
       if (key === "avatar") {
-        return !value; 
+        return !value;
       }
       return !value;
     });
 
-    if(missingFields.length > 0) {
-        notification.open({
-          message: "Thông báo",
-          description: `Vui lòng điền đầy đủ thông tin ${missingFields[0]}`,
-          type: "error",
+    if (missingFields.length > 0) {
+      notification.open({
+        message: "Thông báo",
+        description: `Vui lòng điền đầy đủ thông tin ${missingFields[0]}`,
+        type: "error",
       });
       return;
     }
 
-    const customHeader = { headers: {'Content-Type': 'multipart/form-data'}};
+    const customHeader = { headers: { 'Content-Type': 'multipart/form-data' } };
     const formData = new FormData();
     Object.keys(fields).forEach((key) => {
       formData.append(key, fields[key]);
     });
 
     setLoader(true);
-    api.post('/admin/news/' + id , formData, customHeader)
-    .then(res => {
-      console.log("dv ok: ",res);
-      notification.open({
-        message: "Thông báo",
-        description: "Cập nhật bài viết thành công",
-        type: "success",
-      });
-    })
-    .catch(err => {
-      console.log("dv error: ",err);
+    api.post('/admin/news/' + id, formData, customHeader)
+      .then(res => {
+        console.log("dv ok: ", res);
+        notification.open({
+          message: "Thông báo",
+          description: "Cập nhật bài viết thành công",
+          type: "success",
+        });
+      })
+      .catch(err => {
+        console.log("dv error: ", err);
 
-      const statusCodes = err.response?.status;
-      const message = err.response?.data?.message || null;
-      let des = "Cập nhật bài viết thất bại";
-      switch (statusCodes) {
-        case 400:
-          des = "Dữ liệu không hợp lệ";
-          break;
-        case 403:
-          des = message || "Không có quyền thực hiện thao tác này";
-          break;
-        case 422:
-          const errors = err.response.data.errors;
-          des = errors[Object.keys(errors)[0]][0];
-          break;
-      }
-      notification.open({
-        message: "Thông báo",
-        description: des,
-        type: "error",
+        const statusCodes = err.response?.status;
+        const message = err.response?.data?.message || null;
+        let des = "Cập nhật bài viết thất bại";
+        switch (statusCodes) {
+          case 400:
+            des = "Dữ liệu không hợp lệ";
+            break;
+          case 403:
+            des = message || "Không có quyền thực hiện thao tác này";
+            break;
+          case 422:
+            const errors = err.response.data.errors;
+            des = errors[Object.keys(errors)[0]][0];
+            break;
+        }
+        notification.open({
+          message: "Thông báo",
+          description: des,
+          type: "error",
+        });
+      })
+      .finally(() => {
+        setLoader(false);
       });
-    })
-    .finally(() => {
-      setLoader(false);
-    });
   };
 
   return (
@@ -124,10 +140,19 @@ const EditPost = () => {
       <div className="bg-white p-6 shadow-md rounded-lg">
         <form action="#" onSubmit={submitHandler}>
           < Title value={title} setTitle={setTitle} />
-          < ShortDes  value={shortDes} setShortDes={setShortDes} />
-          <ContentEditor content={content} setContent={setContent}/>
+          < ShortDes value={shortDes} setShortDes={setShortDes} />
+          <ContentEditor content={content} setContent={setContent} />
           < CategoryPost value={category} setCategory={setCategory} />
           < AvatarPost value={avatar} setAvatar={setAvatar} />
+          < Tags oldTags={tags} addTag={setTags} />
+
+          {status !== null && status === 2 &&
+            <div className='mt-4 flex gap-3'>
+              <input type="checkbox" id='guiduyetbai' onChange={e => setIsAccept(e.target.checked)} />
+              <label htmlFor="guiduyetbai">Gửi duyệt bài</label>
+            </div>
+          }
+
           <div className="flex justify-end mt-4">
             <button type="reset" className="mr-4 px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500">
               Hủy

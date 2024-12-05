@@ -1,34 +1,27 @@
 import React, { useEffect, useState } from "react";
 import SlideBanner from "./SlideBanner";
 import { HandlTime } from "/src/components/helper";
-
+import { Link } from "react-router-dom";
+import api from "/src/api";
+import { truncateText } from "../helper/helper";
 
 function Home() {
 
     const [data, setData] = useState(null);
+    const [DataSection, setDataSection] = useState([]);
 
     useEffect(() => {
-        fetch('http://103.118.28.122/data.json')
-            .then(response => response.json())
-            .then(data => setData(data))
-            .catch(error => console.error('Error fetching data:', error));
-    }, []); // Mảng rỗng [] để chỉ gọi API một lần khi component mount
-
-    const DataSection = [
-        {
-            title: 'Tin Mới Nhất',
-            data: data ? data.filter((item, index) => index >= 13 && index <= 22 && index !== 14) : null
-        },
-        {
-            title: 'Tin Nổi Bật',
-            data: data ? data.filter((item, index) => index >= 23 && index <= 23+8) : null
-        },
-        {
-            title: 'Thời Sự',
-            data: data ? data.filter((item, index) => index >= 32 && index <= 32+8) : null
-        },
-
-    ];
+        api.get('/home')
+        .then(response => { 
+            const data = response.data;
+            setData(data.news1);
+            setDataSection(data.danhmuc);
+            console.log(response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }, []);
 
     return (
         <>
@@ -42,8 +35,7 @@ function Home() {
                 </div>
                 <div className="flex flex-col gap-3 col-span-12 md:col-span-4 md:row-start-1 md:row-span-3 md:col-start-9 md:-col-end-1">
                     {data && data.map((item, index) => {
-                        if (!(index >= 4 && index <=12)) return null;
-                        if (index === 7) return null;
+                        if (!(index >= 4)) return null;
                         return <Listin key={'listTin_' + index} item={item} />
                     })}
                 </div>
@@ -53,7 +45,7 @@ function Home() {
                 <SlideBanner />
             </section>
 
-            {DataSection.map((item, index) => <SectionTinTuc key={'sectionTin_' + index} title={item.title} data={item.data} />)}
+            {DataSection.map((item, index) => <SectionTinTuc key={'sectionTin_' + index} title={item.title} data={item.news} />)}
 
         </>
     )
@@ -62,9 +54,9 @@ function Home() {
 function Tinnoibat({ item }) {
     return (
         <div className="">
-            <div><img className="w-full object-cover aspect-video" src={item.thumbL} alt="" /></div>
-            <a href="" className="block text-3xl mt-2 hover:text-gray-700">{item.title}</a>
-            <p className="text-sm">{HandlTime(item.date)}</p>
+            <div><img className="w-full object-cover aspect-video" src={item.img} alt="" /></div>
+            <a href="" className="block text-3xl mt-2 hover:text-gray-700">{truncateText(item.title)}</a>
+            <p className="text-sm">{HandlTime(item.created_at)}</p>
         </div>
     )
 }
@@ -72,10 +64,10 @@ function Tinnoibat({ item }) {
 function ThreeTinMoiNhat({ item }) {
     return (
         <div className="flex-1 flex flex-col gap-2">
-            <div className="basis-1/3 object-cover"><img className="w-full aspect-video object-cover" src={item.thumb} alt="" /></div>
+            <div className="basis-1/3 object-cover"><img className="w-full aspect-video object-cover" src={item.img} alt="" /></div>
             <div className="basis-2/3">
-                <a href="#" className="hover:text-gray-700">{item.title}</a>
-                <p className="text-sm">{HandlTime(item.date)}</p>
+                <a href="#" className="hover:text-gray-700">{truncateText(item.title,100)}</a>
+                <p className="text-sm">{HandlTime(item.created_at)}</p>
             </div>
         </div>
     )
@@ -84,10 +76,10 @@ function ThreeTinMoiNhat({ item }) {
 function Listin({ item }) {
     return (
         <div className="flex gap-2">
-            <div className="basis-1/3 object-cover"><img src={item.thumb} alt="" /></div>
+            <div className="basis-1/3"><img className="aspect-[16/11] object-cover" src={item.img} alt="" /></div>
             <div className="basis-2/3">
-                <a href="#" className="hover:text-gray-700">{item.title}</a>
-                <p className="text-sm">{HandlTime(item.date)}</p>
+                <a href="#" className="hover:text-gray-700">{truncateText(item.title,100)}</a>
+                <p className="text-sm">{HandlTime(item.created_at)}</p>
             </div>
         </div>
     )
@@ -111,10 +103,10 @@ function SectionTinTuc({ title, data = null }) {
 function BoxTin({ item }) {
     return (
         <div className="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 flex-1 flex flex-col gap-2 p-3 hover:shadow-[0px_0px_10px_gray] shadow-slate-800 hover:rounded-lg transition-all">
-            <div className="basis-1/3 object-cover"><img className="w-full aspect-video object-cover" src={item.thumb} alt="" /></div>
+            <div className="basis-1/3 object-cover"><img className="w-full aspect-video object-cover" src={item.img} alt="" /></div>
             <div className="basis-2/3">
                 <a href="#" className="hover:text-gray-700 text-xl font-medium">{item.title}</a>
-                <p className="text-sm">{HandlTime(item.date)}</p>
+                <p className="text-sm">{HandlTime(item.created_at)}</p>
             </div>
         </div>
     )

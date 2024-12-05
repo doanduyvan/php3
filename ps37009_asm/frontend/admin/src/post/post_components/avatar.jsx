@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from "react";
 
 function AvatarPost({ value, setAvatar }) {
-  console.log("value: ", value);
     useEffect(() => {
         return () => {
             value?.preview && URL.revokeObjectURL(value.preview);

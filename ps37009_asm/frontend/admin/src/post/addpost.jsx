@@ -6,6 +6,7 @@ import CategoryPost from './post_components/category';
 import AvatarPost from './post_components/avatar';
 import { notification } from "antd";
 import api from '../api';
+import Tags from './post_components/tags';
 const AddPost = () => {
 
   const [title, setTitle] = useState('');
@@ -13,15 +14,20 @@ const AddPost = () => {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState(null);
   const [avatar, setAvatar] = useState(null);
+  const [tags, setTags] = useState([]);
+
   const submitHandler = (e) => {
     e.preventDefault();
+    const tagsid = tags.map(tag => tag.id);
     const fields = {
        title,
        shortDes, 
        content,
        category,
-       avatar
+       avatar,
+       tagsid: JSON.stringify(tagsid)
     };
+    
     const missingFields = Object.keys(fields).filter((key) => {
       const value = fields[key];
       if (typeof value === "string") {
@@ -61,6 +67,7 @@ const AddPost = () => {
       setContent('');
       setCategory(null);
       setAvatar(null);
+      setTags([]);
     })
     .catch(err => {
       console.log("dv error: ",err);
@@ -94,6 +101,7 @@ const AddPost = () => {
     // });
   };
 
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-semibold mb-6">Đăng Bài Mới</h2>
@@ -104,6 +112,7 @@ const AddPost = () => {
           <ContentEditor content={content} setContent={setContent}/>
           < CategoryPost value={category} setCategory={setCategory} />
           < AvatarPost value={avatar} setAvatar={setAvatar} />
+          < Tags oldTags={tags} addTag={setTags} />
           <div className="flex justify-end mt-4">
             <button type="reset" className="mr-4 px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500">
               Hủy

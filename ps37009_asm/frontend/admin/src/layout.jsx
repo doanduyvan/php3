@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, {useContext} from 'react';
 import { ChevronRight } from './SvgComponent';
 import { Route, Routes, Link, Outlet } from 'react-router-dom';
 import { useState } from 'react';
@@ -12,21 +12,17 @@ import TodoList from './todos/todo';
 import EditPost from './post/editpost';
 import Tags from './tags/listtags';
 import AddTags from './tags/addtag';
-
-// const user = {
-//     name: 'Tom Cook',
-//     email: 'tom@example.com',
-//     imageUrl:
-//         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-// }
-
-// menu dành cho trang webtin tức
+import { UserContext } from './context/usercontext';
+import Page404 from './components/404';
+import AcceptPost from './post/acceptpost';
+import ViewPost from './post/viewpost';
 
 const menu = [
     {
         name: "Dashboard",
         link: "/",
-        submenu: null
+        submenu: null,
+        roles : [1, 2, 3]
     },
     {
         name: "Tags",
@@ -34,7 +30,8 @@ const menu = [
         submenu: [
             { name: "Thêm Tags", link: "/tags/add" },
             { name: "Danh sách Tags", link: "/tags" }
-        ]
+        ],
+        roles : [2,3]
     },
     {
         name: "Danh mục",
@@ -42,7 +39,8 @@ const menu = [
         submenu: [
             { name: "Thêm danh mục", link: "/category/add" },
             { name: "Danh sách danh mục", link: "/category" }
-        ]
+        ],
+        roles : [2,3]
     },
     {
         name: "Bài viết",
@@ -50,33 +48,42 @@ const menu = [
         submenu: [
             { name: "Thêm bài viết", link: "/post/add" },
             { name: "Danh sách bài viết", link: "/post" }
-        ]
+        ],
+        roles : [1]
     },
     {
-        name: "Người dùng",
-        link: "/user",
-        submenu: null
+        name: "Duyệt bài",
+        link: "/duyetbai",
+        submenu: null,
+        roles : [2,3]
     },
-    {
-        name: "Quảng cáo",
-        link: "/ads",
-        submenu: null
-    },
-    {
-        name: "Thiết lập",
-        link: "/setting",
-        submenu: null
-    },
+    // {
+    //     name: "Người dùng",
+    //     link: "/user",
+    //     submenu: null
+    // },
+    // {
+    //     name: "Quảng cáo",
+    //     link: "/ads",
+    //     submenu: null
+    // },
+    // {
+    //     name: "Thiết lập",
+    //     link: "/setting",
+    //     submenu: null
+    // },
     {
         name: "Đăng xuất",
         link: "/",
         submenu: null,
-        action: "logout"
+        action: "logout",
+        roles : [1, 2, 3]
     },
     {
         name: "Todos",
         link: "/todo",
-        submenu: null
+        submenu: null,
+        roles : [1, 2, 3]
     }
 ]
 
@@ -86,11 +93,12 @@ const roleName = {
     3: "Admin"
 }
 
-function Layout({ setIsLogin, user }) {
+function Layout() {
+    
+    const {user, clearUser} = useContext(UserContext);
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        setIsLogin(false);
+        clearUser();
     };
 
     const AllLayout = () => {
@@ -113,6 +121,9 @@ function Layout({ setIsLogin, user }) {
                     <div className="mt-4">
                         <div className="flex flex-col text-white">
                             {menu.map((item, index) => {
+                                if (!item.roles.includes(user.role)) {
+                                    return null;
+                                }
                                 return (
                                     <ItemMenu key={'z1' + index} menu={item} hr={index !== 0} onLogOut={handleLogout} />
                                 )
@@ -136,12 +147,17 @@ function Layout({ setIsLogin, user }) {
                             <Route index element={<PostListPage />} />
                             <Route path="add" element={<AddPost />} />
                             <Route path='edit/:id' element={<EditPost />} />
+                            <Route path='view/:id' element={< ViewPost />} />
                         </Route>
 
                         <Route path="/tags" element={<AllLayout />}>
                             <Route index element={<Tags />} />
                             <Route path="add" element={<AddTags />} />
                         </Route>
+
+                        <Route path="/duyetbai" element={<AcceptPost />} />
+
+                        <Route path="*" element={< Page404 />} />
                         
 
                     </Routes>
@@ -158,7 +174,6 @@ function ItemMenu({ menu, hr, onLogOut }) {
     const handleClick = () => {
         if (menu.action === "logout") {
             onLogOut();
-            console.log('logout');
         }
     };
 

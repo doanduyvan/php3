@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\TagsController;
+use App\Http\Controllers\Customer\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,16 +59,20 @@ Route::prefix('admin/category')->group(function () {
     Route::delete('/{id}', [CategoryController::class, 'destroy']);
 });
 
-Route::prefix('admin/news')->group(function () {
+Route::prefix('admin/news')->middleware('auth.admin')->group(function () {
     Route::get('/', [NewsController::class, 'getNewsByAuthor']);
+    Route::get('/getnewsaccepting', [NewsController::class, 'getNewsAccepting']);
+    Route::post('/updatestatusforcensor', [NewsController::class, 'updateStatusForCensor'])->middleware('auth.admin:2');
     Route::get('/{id}', [NewsController::class, 'show']);
-    Route::post('/', [NewsController::class, 'store']);
+
+    Route::post('/', [NewsController::class, 'store'])->middleware('auth.admin:1');
     Route::post('/{id}', [NewsController::class, 'update']);
     Route::delete('/{id}', [NewsController::class, 'destroy']);
 });
 
 Route::prefix('admin/tags')->group(function () {
     Route::get('/', [TagsController::class, 'getTags']);
+    Route::get('/getalltags', [TagsController::class, 'getAllTags']);
     Route::post('/', [TagsController::class, 'store']);
     Route::put('/{id}', [TagsController::class, 'update']);
     Route::delete('/{id}', [TagsController::class, 'destroy']);
@@ -76,17 +81,19 @@ Route::prefix('admin/tags')->group(function () {
 
 
 
+// dành cho người dùng 
+
+Route::get('/home', [HomeController::class, 'index']);
 
 
 
-
-
+Route::get('/tt', [NewsController::class, 'createTest']);
 
 
 
 Route::get('test', function () {
-    return response()->json(['message' => 'Test middleware']);
-})->middleware('admin.jwt');
+    return response()->json(['message' => 'Test middleware chuoi trong test']);
+})->middleware('auth.admin:1');
 
 Route::middleware('auth:admin')->get('admin/test', function () {
     return response()->json(['message' => 'Hello Admin']);

@@ -40,11 +40,12 @@ Route::post('/sv', [SvController::class, 'sv_store'])->name('sv_store');
 
 // Route::get('/test-email', function () {
     
-//     $subject = 'Test mail php 3';
-//     Mail::to('duyvanlee2001@gmail.com') // Thay bằng email người nhận
-//             ->send(new TestMail($subject));
+//     // $subject = 'Test mail php 3';
+//     // Mail::to('duyvanlee2001@gmail.com') // Thay bằng email người nhận
+//     //         ->send(new TestMail($subject));
 
-//     return 'Email sent successfully!';
+//     // return 'Email sent successfully!';
+
 // });
 
 // Route::get('/send-email', function () {

@@ -18,6 +18,12 @@ class TagsController extends Controller
         //
     }
 
+    public function getAllTags()
+    {
+        $data = Tags::all();
+        return response()->json($data);
+    }
+
     public function getTags(Request $request)
     {
         $limit = $request->query('limit', 10);

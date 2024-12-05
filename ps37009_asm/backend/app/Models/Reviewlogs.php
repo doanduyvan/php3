@@ -11,7 +11,8 @@ class Reviewlogs extends Model
     protected $fillable = [
         'idadmin',
         'idnews',
-        'note'
+        'note',
+        'onoff',
     ];
 
     protected $guarded = [];
