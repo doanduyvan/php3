@@ -4,8 +4,8 @@ services:
   # Container chạy Laravel với Apache
   laravel-app:
     build:
-      context: ./backend/docker
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/Dockerfile
     container_name: laravel-app
     ports:
       - "8000:80"

@@ -35,11 +35,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
-# Copy toàn bộ mã nguồn Laravel vào container
-COPY ./backend /var/www/html
 
 # Cài đặt các gói PHP trong Laravel (thông qua Composer)
-RUN composer install --no-dev --optimize-autoloader
+
 
 # Copy file cấu hình Apache
 COPY ./docker/apache/apache.conf /etc/apache2/sites-available/000-default.conf
