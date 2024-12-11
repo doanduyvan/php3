@@ -44,6 +44,6 @@ COPY ./docker/apache/apache.conf /etc/apache2/sites-available/000-default.conf
 
 # Mở cổng HTTP
 EXPOSE 80
-
+RUN a2enmod headers && service apache2 restart
 # Lệnh khởi chạy Apache
 CMD ["apache2-foreground"]
