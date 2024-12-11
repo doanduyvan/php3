@@ -11,6 +11,9 @@ services:
       - "8000:80"
     volumes:
       - ./backend:/var/www/html
+    command: >
+      sh -c "chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+      && apache2-foreground"
     depends_on:
       - mariadb
     environment:

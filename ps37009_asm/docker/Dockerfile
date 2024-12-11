@@ -31,9 +31,9 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Cấp quyền cho thư mục storage và bootstrap/cache
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+# RUN chown -R www-data:www-data /var/www/html \
+#     && chmod -R 775 /var/www/html/storage \
+#     && chmod -R 775 /var/www/html/bootstrap/cache
 
 
 # Cài đặt các gói PHP trong Laravel (thông qua Composer)
