@@ -7,25 +7,13 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\TagsController;
 use App\Http\Controllers\Customer\HomeController;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-
-// Route::get('/category', 'App\Http\Controllers\CategoryController@index');
-// Route::post('/category', 'App\Http\Controllers\CategoryController@store');
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\HomeControllerAdmin;
+use App\Http\Controllers\Customer\BannerController as BannerControllerCustomer;
+use App\Http\Controllers\Customer\CcategoryController;
+use App\Http\Controllers\Customer\CnewsController;
+use App\Http\Controllers\Customer\CustomerAuthController;
 
 
 Route::prefix('admin')->group(function () {
@@ -33,26 +21,9 @@ Route::prefix('admin')->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout']);
 });
 
-// Routes cho admin
+Route::get('admin/home',[HomeControllerAdmin::class, 'index'])->middleware('auth.admin');
 
-// Route::group(['middleware' => 'auth:admin', 'prefix' => 'admin'], function ($router) {
-//     Route::group(['prefix' => 'category'], function ($router) {
-//         Route::get('/', [CategoryController::class, 'index']);
-//         Route::post('/', [CategoryController::class, 'store']);
-//         Route::put('/{id}', [CategoryController::class, 'update']);
-//         Route::delete('/{id}', [CategoryController::class, 'destroy']);
-//     });
-
-//     Route::group(['prefix' => 'news'], function ($router) {
-//         Route::get('/', [NewsController::class, 'index']);
-//         Route::post('/', [NewsController::class, 'store']);
-//         Route::put('/{id}', [NewsController::class, 'update']);
-//         Route::delete('/{id}', [NewsController::class, 'destroy']);
-//     });
-// });
-
-
-Route::prefix('admin/category')->group(function () {
+Route::prefix('admin/category')->middleware('auth.admin')->group(function () {
     Route::get('/', [CategoryController::class, 'index']);
     Route::post('/', [CategoryController::class, 'store']);
     Route::put('/{id}', [CategoryController::class, 'update']);
@@ -79,11 +50,39 @@ Route::prefix('admin/tags')->group(function () {
 });
 
 
+Route::prefix('admin/banners')->middleware('auth.admin:3')->group(function () {
+    Route::get('/', [BannerController::class, 'index']);
+    Route::get('/{id}', [BannerController::class, 'show']);
+    Route::post('/', [BannerController::class, 'store']);
+    Route::post('/{id}', [BannerController::class, 'update']);
+    Route::delete('/{id}', [BannerController::class, 'destroy']);
+});
+
+Route::prefix('admin/accounts')->middleware('auth.admin:3')->group(function () {
+    Route::get('/', [AccountController::class, 'index']);
+    Route::get('/{id}', [AccountController::class, 'show']);
+    Route::post('/', [AccountController::class, 'store']);
+    Route::put('/{id}', [AccountController::class, 'update']);
+    Route::delete('/{id}', [AccountController::class, 'destroy']);
+});
 
 
 // dành cho người dùng 
 
+Route::get('/nav', [CcategoryController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index']);
+Route::get('/banners', [BannerControllerCustomer::class, 'index']);
+Route::get('/danhmuc/gettennew', [CnewsController::class, 'getTenNewNews']);
+Route::get('/danhmuc/{id}', [CnewsController::class, 'getNewsByCategory']);
+Route::get('/chitiet/{id}', [CnewsController::class, 'getDetail']);
+Route::get('/comments/{id}', [CnewsController::class, 'getCommetsByNews']);
+Route::post('/comments/{id}', [CnewsController::class, 'setComment'])->middleware('auth.customer');
+
+Route::post('/signin', [CustomerAuthController::class, 'login']);
+Route::post('/signup', [CustomerAuthController::class, 'signup']);
+
+
+
 
 
 

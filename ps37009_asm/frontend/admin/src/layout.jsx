@@ -16,6 +16,9 @@ import { UserContext } from './context/usercontext';
 import Page404 from './components/404';
 import AcceptPost from './post/acceptpost';
 import ViewPost from './post/viewpost';
+import PageBanner from './banner/pagebanner';
+import { Modal } from 'antd';
+import PageAccount from './accounts/pageaccount';
 
 const menu = [
     {
@@ -55,23 +58,26 @@ const menu = [
         name: "Duyệt bài",
         link: "/duyetbai",
         submenu: null,
-        roles : [2,3]
+        roles : [2]
     },
-    // {
-    //     name: "Người dùng",
-    //     link: "/user",
-    //     submenu: null
-    // },
-    // {
-    //     name: "Quảng cáo",
-    //     link: "/ads",
-    //     submenu: null
-    // },
-    // {
-    //     name: "Thiết lập",
-    //     link: "/setting",
-    //     submenu: null
-    // },
+    {
+        name: "Bài Viết",
+        link: "/duyetbai",
+        submenu: null,
+        roles : [3]
+    },
+    {
+        name: "Quảng cáo",
+        link: "/quancao",
+        submenu: null,
+        roles : [3]
+    },
+    {
+        name: "Quản lý tài khoản",
+        link: "/quanlytaikhoan",
+        submenu: null,
+        roles : [3]
+    },
     {
         name: "Đăng xuất",
         link: "/",
@@ -98,7 +104,13 @@ function Layout() {
     const {user, clearUser} = useContext(UserContext);
 
     const handleLogout = () => {
-        clearUser();
+        Modal.confirm({
+            title: 'Xác nhận đăng xuất',
+            content: 'Bạn có chắc chắn muốn đăng xuất?',
+            onOk: () => {
+                clearUser();
+            }
+        });
     };
 
     const AllLayout = () => {
@@ -157,6 +169,10 @@ function Layout() {
 
                         <Route path="/duyetbai" element={<AcceptPost />} />
 
+                        <Route path="/quancao" element={< PageBanner />} />
+
+                        <Route path="/quanlytaikhoan" element={< PageAccount />} />
+
                         <Route path="*" element={< Page404 />} />
                         
 
@@ -171,8 +187,9 @@ function ItemMenu({ menu, hr, onLogOut }) {
     const submenu = menu.submenu;
     const [open, setOpen] = useState(false);
 
-    const handleClick = () => {
+    const handleClick = (e) => {
         if (menu.action === "logout") {
+            e.preventDefault();
             onLogOut();
         }
     };
@@ -182,7 +199,7 @@ function ItemMenu({ menu, hr, onLogOut }) {
             {hr && <hr className='border-gray-500' />}
             <div className={`flex items-center px-4 py-2 hover:bg-gray-900 cursor-pointer ${open ? "active" : ''}`}>
                 {!submenu ?
-                    <Link to={menu.link} className="text-lg flex-1" onClick={handleClick}>{menu.name}</Link>
+                    <Link to={menu.link} className="text-lg flex-1" onClick={e=>handleClick(e)}>{menu.name}</Link>
                     :
                     <a to={menu.link} className="text-lg flex-1" onClick={() => { setOpen(!open) }}>{menu.name}</a>
                 }

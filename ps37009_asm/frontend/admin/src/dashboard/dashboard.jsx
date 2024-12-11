@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-
+import api from '../api';
+import LoaDing from '../components/loading';
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -13,8 +14,16 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const chartRef = useRef(null);
 
+  const [loader, setLoader] = useState(false);
+  const [dataHome, setDataHome] = useState({
+    totalPosts: 0,
+    pendingPosts: 0,
+    totalUsers: 0,
+    postByMonth: [],
+  });
+
+  const chartRef = useRef(null);
   useEffect(() => {
     const handleResize = () => {
       if (chartRef.current && chartRef.current.chartInstance) {
@@ -30,17 +39,33 @@ const Dashboard = () => {
 
   // Data for the chart
   const data = {
-    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
+    labels: dataHome.postByMonth.map(item => `Tháng ${item.month}`),
     datasets: [
       {
         label: 'Số bài viết',
-        data: [10, 15, 20, 0, 30, 35],
+        data: dataHome.postByMonth.map(item => item.total),
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         fill: true,
       },
     ],
   };
+
+  useEffect(() => {
+    const url = '/admin/home';
+    const fetchData = async () => {
+      setLoader(true);
+      try {
+        const response = await api.get(url);
+        const data = response.data;
+        setDataHome(data);
+      } catch (error) {
+        console.error('Failed to fetch data: ', error);
+      }
+      setLoader(false);
+    };
+    fetchData();
+  }, []);
 
   // Options for the chart
   const options = {
@@ -69,19 +94,19 @@ const Dashboard = () => {
           {/* Card 1 - Tổng số bài viết */}
           <div className="bg-blue-500 text-white p-4 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">Tổng số bài viết</h3>
-            <p className="text-3xl mt-2">120</p>
+            <p className="text-3xl mt-2">{dataHome.totalPosts}</p>
           </div>
 
           {/* Card 2 - Bài viết đang chờ duyệt */}
           <div className="bg-yellow-500 text-white p-4 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">Bài viết đang chờ duyệt</h3>
-            <p className="text-3xl mt-2">15</p>
+            <p className="text-3xl mt-2">{dataHome.pendingPosts}</p>
           </div>
 
           {/* Card 3 - Tổng số người dùng */}
           <div className="bg-green-500 text-white p-4 rounded-lg shadow-lg">
             <h3 className="text-xl font-semibold">Tổng số người dùng</h3>
-            <p className="text-3xl mt-2">35</p>
+            <p className="text-3xl mt-2">{dataHome.totalUsers}</p>
           </div>
         </div>
 
@@ -93,6 +118,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <LoaDing loader={loader} />
     </div>
   );
 };

@@ -72,6 +72,17 @@
   overflow: auto;    /* Hiển thị thanh cuộn nếu cần */
 }
 
-.afdfdfasfasdf{
-  background-color: rgba(218, 218, 218, 0.5);
+
+
+.fadeInOpacity {
+  animation: fadeInOpacity 0.3s ease;
+}
+
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }

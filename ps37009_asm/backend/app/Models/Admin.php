@@ -27,15 +27,15 @@ class Admin extends Authenticatable implements JWTSubject
 
     public $timestamps = false;
 
-    public function setPasswordAttribute($value)
+    public function setPassAttribute($value)
     {
         $this->attributes['pass'] = bcrypt($value);
     }
 
     public function getAuthPassword()
-{
-    return $this->pass;
-}
+    {
+        return $this->pass;
+    }
 
     public function news()
     {

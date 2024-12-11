@@ -29,7 +29,7 @@ class NewsController extends Controller
         $idAdmin = $request->idadmin;
         $limit = $request->query('limit', 10);
         $selectNews = ['id', 'title', 'img', 'created_at', 'onoff', 'idadmin', 'idcategory'];
-        $data = News::select($selectNews)->where('idadmin', $idAdmin)->with(['admin:id,fullname', 'category', 'tags'])->paginate($limit);
+        $data = News::select($selectNews)->where('idadmin', $idAdmin)->with(['admin:id,fullname', 'category', 'tags'])->orderBy('created_at','desc')->paginate($limit);
         return response()->json($data);
     }
 

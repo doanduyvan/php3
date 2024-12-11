@@ -28,3 +28,16 @@ function HandlTime(timestamp) {
 }
 
 export { HandlTime };
+
+function convertToSlug(text) {
+    return text
+        .toLowerCase() // Chuyển thành chữ thường
+        .normalize("NFD") // Chuẩn hóa ký tự Unicode
+        .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu
+        .replace(/đ/g, "d") // Thay thế ký tự đặc biệt 'đ'
+        .replace(/[^a-z0-9 ]/g, "") // Loại bỏ ký tự đặc biệt
+        .replace(/\s+/g, "-") // Thay khoảng trắng bằng dấu gạch ngang
+        .trim(); // Loại bỏ khoảng trắng dư thừa
+}
+
+export { convertToSlug };

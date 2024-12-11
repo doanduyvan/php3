@@ -1,35 +1,27 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-// const linksImg = [
-//     {
-//         img: 'https://clickbuy.com.vn/uploads/media/620-SkSDQ.png',
-//         link: 'https://clickbuy.com.vn/iphone-16-pro-max'
-//     },
-//     {
-//         img: 'https://clickbuy.com.vn/uploads/media/617-KpqUC.png',
-//         link: 'https://clickbuy.com.vn/samsung-galaxy-s24-series'
-//     },
-//     {
-//         img: 'https://clickbuy.com.vn/uploads/media/633-AEmum.png',
-//         link: 'https://clickbuy.com.vn/samsung-galaxy-z-fold5-cu-dep'
-//     }
-// ]
-
-const linksImg = [
-    {
-        img: 'https://clickbuy.com.vn/uploads/media/620-SkSDQ.png',
-        link: 'https://clickbuy.com.vn/iphone-16-pro-max'
-    },
-    {
-        img: 'https://clickbuy.com.vn/uploads/media/633-AEmum.png',
-        link: 'https://clickbuy.com.vn/samsung-galaxy-z-fold5-cu-dep'
-    }
-]
+import api from "/src/api";
 
 function SlideBanner() {
+
+    const [banners, setBanners] = useState([]);
+    
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+                const response = await api.get("/banners");
+                const banners = response.data;
+                setBanners(banners);
+                console.log('Banners: ', banners);
+            } catch (error) {
+                console.error('Failed to fetch banners: ', error);
+            }
+        }
+        fetchBanners();
+    }, []);
+    
     const settings = {
         dots: false,
         infinite: true,
@@ -39,15 +31,18 @@ function SlideBanner() {
         autoplay: true,
         autoplaySpeed: 2000
     };
+
+    if (banners.length == 0) return null;
+
     return (
         <div className="slider-container">
             {
-                linksImg.length > 1 ?
+                banners.length > 1 ?
                     <Slider {...settings}>
-                        {linksImg.map((item, index) => <Slide key={'slide_' + index} linkImg={item.img} linkweb={item.link} />)}
+                        {banners.map((item, index) => <Slide key={'slide_' + index} linkImg={item.img} linkweb={item.link} />)}
                     </Slider>
                     :
-                    <Slide linkImg={linksImg[0].img} linkweb={linksImg[0].link} />
+                    <Slide linkImg={banners[0]?.img} linkweb={banners[0]?.link} />
             }
         </div>
     )

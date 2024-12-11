@@ -24,9 +24,14 @@ class Customer extends Authenticatable implements JWTSubject
         'pass',
     ];
 
-    public function setPasswordAttribute($value)
+    public function setPassAttribute($value)
     {
         $this->attributes['pass'] = bcrypt($value);
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->pass;
     }
 
     public function comments()
@@ -41,6 +46,10 @@ class Customer extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
-        return [];
+        return [
+            'username' => $this->fullname,
+            'email' => $this->email,
+            'avatar' => $this->avatar,
+        ];
     }
 }

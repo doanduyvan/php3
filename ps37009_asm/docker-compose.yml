@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Container chạy Laravel với Apache
+  laravel-app:
+    build:
+      context: ./backend/docker
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - mariadb
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_DATABASE=php3
+      - DB_USERNAME=root
+      - DB_PASSWORD=123
+
+  # Container chạy Apache cho trang Admin
+  admin-app:
+    image: httpd:latest
+    container_name: admin-app
+    ports:
+      - "8081:80"
+    volumes:
+      - ./frontend/admin/dist:/usr/local/apache2/htdocs/
+
+  # Container chạy Apache cho trang User
+  user-app:
+    image: httpd:latest
+    container_name: user-app
+    ports:
+      - "8082:80"
+    volumes:
+      - ./frontend/user/dist:/usr/local/apache2/htdocs/
+
+  # Container MariaDB
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    ports:
+      - "8083:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: php3
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Container phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8084:80"
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+    depends_on:
+      - mariadb
+
+volumes:
+  db_data:

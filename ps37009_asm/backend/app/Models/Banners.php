@@ -17,4 +17,12 @@ class Banners extends Model
     protected $guarded = [];
  
     public $timestamps = true;    
+
+    public function getImgAttribute($value)
+    {
+        if ($value) {
+            return asset('storage/uploads/banners/' . $value);
+        }
+        return null; // Nếu không có ảnh
+    }
 }
