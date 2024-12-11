@@ -18,7 +18,7 @@ class AccountAdmin extends Seeder
         DB::table('admin')->insert([
             [
                 'fullname' => 'root',
-                'pass' => Hash::make('123zzz'),
+                'pass' => bcrypt('123zzz'),
                 'role' => 3,
                 'email' => 'root@gmail.com',
                 'avatar' => 'https://placehold.co/600x400'
